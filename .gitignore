@@ -6,6 +6,7 @@ __pycache__/
 
 Data/
 out/
+plot.py
 
 # C extensions
 *.so
