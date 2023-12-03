@@ -26,4 +26,5 @@ train_mse.py.
 
 For this repository we provided a small pre-processed dataset. We assume that
 the reader is familiar with data preprocessing through the remaining chapters
-of the book.
+of the book. The only data preprocessing happening is normalization, which we
+do as a part of the data loader.
