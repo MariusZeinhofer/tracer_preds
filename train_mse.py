@@ -1,7 +1,16 @@
+"""
+Trains a U-net with a pixel-based regression loss. 
+
+Graphical output during the training process is written into the 
+out_folder which is either named /out or specified as a command
+line argument.
+"""
+
 import argparse
 from pathlib import Path
 import torch
 from torch.utils.data import DataLoader
+from torch.utils.data import random_split
 import torch.optim as optim
 import torch.nn as nn
 import torchvision
@@ -12,49 +21,50 @@ import numpy as np
 from unet import UNET
 from dataset import MRIDataset
 
-
-# handling of command line variables
 parser = argparse.ArgumentParser()
 parser.add_argument(
-    "--train_dir", 
-    help="path to train directory", 
-    default="Data/Train",
-    type=str,
-    )
-
-parser.add_argument(
-    "--test_dir", 
-    help="path target directory", 
-    default="Data/Test",
+    "--data_dir", 
+    help="path to data directory", 
+    default="Dataset/",
     type=str,
     )
 
 parser.add_argument(
     "--out_folder", 
-    help="path to folder to generic output", 
+    help="path to folder to generic output",
     default="out/", 
     type=str,
+    )
+
+parser.add_argument(
+    "--epochs", 
+    help="number of training epochs",
+    default=250, 
+    type=int,
+    )
+
+parser.add_argument(
+    "--batch_size", 
+    help="number of samples in each SGD/ADAM step",
+    default=8, 
+    type=int,
     )
 
 args = parser.parse_args()
 argparse_dict = vars(args)
 
-
-# some globals
 DEVICE        = "cuda" if torch.cuda.is_available() else "cpu"
-BATCH_SIZE    = 8
 LEARNING_RATE = 1e-3
-EPOCHS        = 250
 
 print(f'GPU training is available: {torch.cuda.is_available()}')
 
 # instantiate datasets
-train_data = MRIDataset(args.train_dir + '/Input', args.train_dir + '/Target')
-test_data  = MRIDataset(args.test_dir + '/Input', args.test_dir + '/Target')
+data = MRIDataset(args.data_dir + 'Input', args.data_dir + 'Target')
+train_data, test_data = random_split(data, [0.8, 0.2])
 
 # instantiate loaders
-train_loader = DataLoader(train_data, batch_size=BATCH_SIZE, shuffle=True)
-test_loader  = DataLoader(test_data, batch_size=BATCH_SIZE, shuffle=False)
+train_loader = DataLoader(train_data, batch_size=args.batch_size, shuffle=True)
+test_loader  = DataLoader(test_data, batch_size=args.batch_size, shuffle=False)
 
 # save the test image for inspection
 torchvision.utils.save_image(
@@ -77,7 +87,7 @@ train_metrics = []
 test_metrics = []
 
 # training loop
-for epoch in range(EPOCHS):
+for epoch in range(args.epochs):
     for batch_idx, (inputs, targets) in enumerate(train_loader):
         
         # insert channel dimension 1 and move to gpu if possible
@@ -91,7 +101,6 @@ for epoch in range(EPOCHS):
 
         # compute loss
         loss = loss_fn(predictions, targets)
-        #print(loss.shape)
         
         # delete previously computed gradients
         optimizer.zero_grad()

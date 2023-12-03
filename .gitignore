@@ -4,9 +4,6 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-Data/
-out/
-plot.py
 
 # C extensions
 *.so

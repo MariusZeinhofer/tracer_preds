@@ -1,5 +1,6 @@
-# this is an implementation of U-Net. A popular architecture for segmentation
-# that was developed in Freiburg.
+"""
+Implementation of U-Net, a popular architecture for segmentation.
+"""
 
 import torch
 import torch.nn as nn
@@ -72,23 +73,3 @@ class UNET(nn.Module):
             x = self.ups[idx+1](concat_skip)
 
         return self.final_conv(x)
-    
-if __name__ == '__main__':
-    unet = UNET()
-
-    X = torch.rand(size=(1, 1, 128, 128), dtype=torch.float32)
-    
-    print('Downs:')
-    for block in unet.downs:
-        X = block(X)
-        print(block.__class__.__name__,'output shape: \t', X.shape)
-    
-    print('Bottleneck:')
-    X = unet.bottleneck(X)
-    print(unet.bottleneck.__class__.__name__,'output shape: \t', X.shape)
-
-    print('Ups:')
-    for block in unet.ups:
-        X = block(X)
-        print(block.__class__.__name__,'output shape: \t', X.shape)
-        

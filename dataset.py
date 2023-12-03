@@ -1,18 +1,14 @@
-# Here is the Dataset implementation. 
+"""
+Implements the Pytorch abstraction of a dataset.
+
+Logic: Input and Target Data is in two folders. The only requirement for the 
+Dataset to work is that corresponding pairs (Input, Target) have the same name.
+""" 
 
 from torch.utils.data import Dataset
 import pathlib
 import numpy as np
 from PIL import Image
-
-# Question 1: pathlib.Path(<windows style path>) does not work in this implementation...
-# Question 2: list(self.input_dir.iterdir()) seems bad. But PyTorch wants integer based iteration.
-# Question 3: What does img.squeeze() do? A: Is a numpy method that removes axis of length 1
-#
-#
-# Logic: Input and Target Data is in two folders. The only requirement for the 
-# Dataset to work is that corresponding pairs (Input, Target) have the same name.
-#  
 
 def preprocess(input_path, target_path):
     # normalization
@@ -65,7 +61,7 @@ class MRIDataset(Dataset):
 if __name__ == '__main__':
     from matplotlib import pyplot as plt
 
-    dataset = MRIDataset(input_dir='Data/Input', target_dir=pathlib.Path('Data/Target'))
+    dataset = MRIDataset(input_dir='Dataset/Input', target_dir=pathlib.Path('Dataset/Target'))
 
     figure = plt.figure(figsize=(8, 8))
     rows, columns = 2, 4
