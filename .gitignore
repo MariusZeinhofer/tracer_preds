@@ -9,9 +9,10 @@ __pycache__/
 *.so
 
 # images and vtu's
-*.png
 *.vtu
 *.pvd
+*.png:Zone.Identifier
+*.txt:Zone.Identifier
 
 # Distribution / packaging
 .Python
